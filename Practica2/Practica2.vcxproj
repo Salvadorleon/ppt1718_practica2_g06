@@ -18,6 +18,12 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cliente46.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="protocol.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{85388EC9-D7A5-45B1-B3C3-10235DAE5669}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -145,12 +151,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\..\Desktop\cliente46.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\..\Desktop\protocol.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
