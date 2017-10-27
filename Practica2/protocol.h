@@ -3,7 +3,7 @@
 #endif
 
 // COMANDOS DE APLICACION
-#define HELO " HELO"
+#define HELO "HELO"
 
 #define QUIT  "QUIT"  // Finalizacion de la conexion de aplicacion
 

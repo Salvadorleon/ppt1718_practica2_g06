@@ -118,7 +118,7 @@ int main(int *argc, char *argv[])
 						printf("CLIENTE> Introduzca su host (enter para salir): ");
 						gets_s(input,sizeof(input));
 						if(strlen(input)==0){
-							sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",HELO,CRLF);
+							sprintf_s (buffer_out, sizeof(buffer_out), "%s%s%s%s",HELO,CRLF);
 							estado=S_QUIT;
 						}
 						else
