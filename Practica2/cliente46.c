@@ -10,7 +10,7 @@ Fecha: 09/2017
 Descripción:
 	Cliente sencillo TCP.
 
-Autor: Juan Carlos Cuevas Martínez
+Autor: Salvador León Ortega - Salvador Trujillo Díaz
 
 *******************************************************/
 #include <stdio.h>
@@ -111,7 +111,8 @@ int main(int *argc, char *argv[])
 				do{
 					switch(estado){
 					case S_HELO:
-						// Se recibe el mensaje de bienvenida
+						// Recibimos el mensaje de bienvenida
+						sprintf_s(buffer_out, sizeof(buffer_out), "HELO hola\r\n");
 						break;
 					case S_USER:
 						// establece la conexion de aplicacion 
@@ -129,7 +130,7 @@ int main(int *argc, char *argv[])
 						printf("CLIENTE> Introduzca la clave (enter para salir): ");
 						gets_s(input,sizeof(input));
 						if(strlen(input)==0){
-							sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",SD,CRLF);
+							sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",QUIT,CRLF);
 							estado=S_QUIT;
 						}
 						else
@@ -139,7 +140,7 @@ int main(int *argc, char *argv[])
 						printf("CLIENTE> Introduzca datos (enter o QUIT para salir): ");
 						gets_s(input, sizeof(input));
 						if(strlen(input)==0){
-							sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",SD,CRLF);
+							sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",QUIT,CRLF);
 							estado=S_QUIT;
 						}
 						else
