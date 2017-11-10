@@ -114,7 +114,10 @@ int main(int *argc, char *argv[])
 						// Recibimos el mensaje de bienvenida
 						sprintf_s(buffer_out, sizeof(buffer_out), "HELO hola\r\n");
 						break;
-					case S_USER:
+
+						//METER AQUI EL SUBJECT ANTES DE HACER EL ENVIO DEL CORREO
+
+					case S_DATA:
 						// establece la conexion de aplicacion 
 						printf("CLIENTE> Introduzca su host (enter para salir): ");
 						gets_s(input,sizeof(input));
