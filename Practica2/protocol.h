@@ -3,26 +3,27 @@
 #endif
 
 // COMANDOS DE APLICACION
+#define CONNECT "CONNECT"
 #define HELO "HELO"
-#define QUIT  "QUIT"  // Finalizacion de la conexion de aplicacion
+#define SD  "QUIT"  // Finalizacion de la conexion de aplicacion
+#define RS "RESET"
 
 // RESPUESTAS A COMANDOS DE APLICACION
 #define OK  "2"
 #define OKDATA "3"
-#define ER  "5"
+//#define ERROR  "5"
 
 //FIN DE RESPUESTA
 #define CRLF "\r\n"
 
 //ESTADOS
-#define S_CONNECT 0
-#define S_HELO 1
-#define S_MAIL_FROM 2
-#define S_RCPT_TO 3
-#define S_SEND 4
-#define S_DATA_MAIL 5
-#define S_QUIT 6
-#define S_EXIT 7
-
+#define S_RSET -1
+#define S_HELO 0
+#define S_MAIL_RT 1
+#define S_MAIL_DT 2
+#define S_DATA 3
+#define S_MENSAJE 4
+#define S_QUIT 5
+#define S_ERROR 6
 //PUERTO DEL SERVICIO
 #define TCP_SERVICE_PORT	25
