@@ -199,8 +199,9 @@ int main(int *argc, char *argv[])
 						printf("\nMENSAJE: (escribe un '.' para finalizar)\r\n");
 						do {
 							gets(entrada);
-							sprintf_s(mensaje, sizeof(mensaje), "%s%s%s", mensaje, CRLF, entrada);
-						} while (strncmp(entrada, ".", 1) != 0);
+							sprintf_s(mensaje, sizeof(mensaje), "%s%s", entrada, CRLF);
+							enviados = send(sockfd, mensaje, (int)strlen(mensaje), 0);
+						} while (strcmp(entrada, ".") != 0);
 						sprintf_s(buffer_out, sizeof(mensaje), "%s%s", mensaje, CRLF);
 						break;
 
