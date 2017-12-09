@@ -12,6 +12,7 @@ Autor: Juan Carlos Cuevas Martínez
 Alumnos Salvador Trujillo Diaz y Salvador Leon Ortega
 *******************************************************/
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <ws2tcpip.h>//Necesaria para las funciones IPv6
 #include <conio.h>
@@ -28,7 +29,7 @@ int main(int *argc, char *argv[])
 	struct sockaddr_in6 server_in6;
 	int ipdestl = 0;
 	int address_size = sizeof(server_in4);
-	char buffer_in[1024], buffer_out[1024], input[1024], remit[50], dest[50], asunto[50] = "", fecha[1024] = "", mensaje[1024] = "", entrada[1024] = ".";
+	char buffer_in[1024], buffer_out[1024], input[1024], remit[50], dest[50], dests[50] = "", asunto[50] = "", fecha[1024] = "", mensaje[1024] = "", entrada[1024] = ".";
 	int recibidos = 0, enviados = 0;
 	int estado = S_HELO;
 	char option;
@@ -141,49 +142,71 @@ int main(int *argc, char *argv[])
 
 					case S_HELO:
 						sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", HELO, CRLF);
+						estado++;
 						break;
 					case S_MAIL_RT:
 						// ENVIO
-						printf("CLIENTE> Introduce tu correo: ");
+						printf("CLIENTE> Introduce tu correo (para salir INTRO para resetear escribe RSET): ");
 						gets_s(input, sizeof(input));
 						if (strlen(input) == 0) {
 							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
+							estado = S_QUIT;
 						}
-						else
+						else if (strncmp(input, "RSET", 4) == 0) {
+							estado = S_RSET;
+						}
+						else {
 							//send(sockfd, input, strlen(input), 0);
 							strcpy_s(remit, sizeof(remit), input);
-						//recv(sockfd, input, sizeof(input), 0);
-						sprintf_s(buffer_out, sizeof(buffer_out), "MAIL FROM:<%s>%s", remit, CRLF);
-
+							//recv(sockfd, input, sizeof(input), 0);
+							sprintf_s(buffer_out, sizeof(buffer_out), "MAIL FROM:<%s>%s", remit, CRLF);
+							estado++;
+						}
 						break;
 					case S_MAIL_DT:
-						printf("CLIENTE> Introduce el correo destinatario: ");
+						printf("CLIENTE> Introduce el correo destinatario (para salir INTRO para resetear escribe RSET): ");
 						gets_s(input, sizeof(input));
 						if (strlen(input) == 0) {
 							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
-
+							estado = S_QUIT;
 						}
-						else
+						else if (strncmp(input, "RSET", 4) == 0) {
+							estado = S_RSET;
+							break;
+						}
+						else {
 							strcpy_s(dest, sizeof(dest), input);
-						//recv(sockfd, input, sizeof(input), 0);
-						sprintf_s(buffer_out, sizeof(buffer_out), "RCPT TO:<%s>%s", dest, CRLF);
+							//recv(sockfd, input, sizeof(input), 0);
+							sprintf_s(buffer_out, sizeof(buffer_out), "RCPT TO:<%s>%s", dest, CRLF);
+						}
+						printf("¿Quieres introducir otro destinatario S/N?\r\n");
+						char opcion = "";
+						opcion = _getche();
+						if (opcion == 'N' || opcion == 'n') {
+							estado++;
+						}
 
-						//sprintf_s (buffer_out, sizeof(buffer_out), "%s %s%s",DEST,CRLF);
+						/*if (strcmp(dests, "") != 0) {
+						strcat(dests, ",");
+						strcat(dests, dest);
+						}
+						if (strcmp(dests, "") == 0) {
+						strcpy_s(dests, sizeof(dests), dest);
+						}
+						printf(dests);*/
 						break;
 
 					case S_DATA:
 						sprintf_s(buffer_out, sizeof(buffer_out), "DATA%s", CRLF);
-
+						estado++;
 						break;
 
 
 
 					case S_MENSAJE:
-
 						//Asunto
 						printf("\nAsunto: ");
 						gets(asunto);
-
 						time_t t;
 						struct tm *tm;
 						char fechayhora[100];
@@ -195,12 +218,11 @@ int main(int *argc, char *argv[])
 						strcpy_s(fecha, sizeof(fecha), fechayhora);
 
 						//Cabeceras  del mensaje
-						sprintf_s(mensaje, sizeof(mensaje), "Date: %s%sFrom: %s%sTo: %s%sSubject: %s%s", fecha, CRLF, remit, CRLF, dest, CRLF, asunto, CRLF);
+						sprintf_s(mensaje, sizeof(mensaje), "Date: %s%sFrom: %s%sTo: %s%sSubject: %s%s", fecha, CRLF, remit, CRLF, dests, CRLF, asunto, CRLF);
 						printf("\nMENSAJE: (escribe un '.' para finalizar)\r\n");
 						do {
 							gets(entrada);
-							sprintf_s(mensaje, sizeof(mensaje), "%s%s", entrada, CRLF);
-							enviados = send(sockfd, mensaje, (int)strlen(mensaje), 0);
+							sprintf_s(mensaje, sizeof(mensaje), "%s%s%s", mensaje, CRLF, entrada);
 						} while (strcmp(entrada, ".") != 0);
 						sprintf_s(buffer_out, sizeof(mensaje), "%s%s", mensaje, CRLF);
 						break;
@@ -234,9 +256,20 @@ int main(int *argc, char *argv[])
 							printf(buffer_in);
 						}
 
+					if (strncmp(buffer_in, "250 R", 5) == 0) {//usuario existe,copiar en lista rcpt to:
+						if (strcmp(dests, "") != 0) {
+							strcat(dests, ",");
+							strcat(dests, dest);
+						}
+						if (strcmp(dests, "") == 0) {
+							strcpy_s(dests, sizeof(dests), dest);
+						}
+
+					}
 
 					if (strncmp(buffer_in, "554", 3) == 0) {
 						printf("Destinatario incorrecto,intentelo de nuevo \r\n");
+						estado = S_MAIL_DT;
 					}
 
 					if (estado == S_MENSAJE && strncmp(buffer_in, "250", 3) == 0) {
@@ -252,10 +285,6 @@ int main(int *argc, char *argv[])
 
 					}
 
-					//Avance de estado
-					if (strncmp(buffer_in, "2", 1) == 0 || strncmp(buffer_in, "3", 1) == 0) {
-						estado++;
-					}
 
 
 
